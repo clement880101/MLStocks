@@ -45,7 +45,9 @@ def merge(left, right):
 
 
 def compile(stock):
-    API_key = 'ATFBYYKDGZGWGJXS'
+    # Keys: ##ATFBYYKDGZGWGJXS##, ##AUV1J66PW0AGIHP3##
+    API_key = 'AUV1J66PW0AGIHP3'
+
     print("Start Compiling...")
     comp, meta = get_daily_ts(stock, API_key)
     data, meta = get_daily_technical(stock, 'bband', API_key, 20)
@@ -62,7 +64,7 @@ def compile(stock):
     comp = merge(comp, data)
     # Alpha Vantage only allows 5 pulls per minute
     print("Waiting for 1 minute cooldown")
-    time.sleep(60)
+    time.sleep(61)
     data, meta = get_daily_technical(stock, 'aroon', API_key, 14)
     comp = merge(comp, data)
     print('Done with stock: ' + stock)
@@ -73,30 +75,23 @@ def compile(stock):
     return comp
 
 
-# makes a list of out n arguments
-def make_list(*args):
-    list = []
-    for stock in args:
-        list.append(str(stock))
-    return list
-
-
 def create_df(stocks_names, stocks_data):
     # add name as a prefix to each column for each stock
     for x in range(len(stocks_names)):
-        stocks_data.add_prefix(stocks_names[x] + '_')
+        stocks_data[x] = stocks_data[x].add_prefix(stocks_names[x] + '_')
 
     df = stocks_data[0]
     if len(stocks_names) > 1:
         # we join each stock to the df by inner and on the date axis
-        for x in range(start=1, stop=len(stocks_names)):
+        for x in range(1, len(stocks_names)):
             df = pd.concat(objs=[df, stocks_data[x]], join='inner', axis=1)
 
+    df.to_csv("stocks_data_combined.csv")
     return df
 
 
 def main():
-    stocks_names = make_list('Aapl', 'Googl', 'Msft')
+    stocks_names = ['Aapl', 'Googl']
     stocks_data = []
     for stock in stocks_names:
         stocks_data.append(compile(stock))
