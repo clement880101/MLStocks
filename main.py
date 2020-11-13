@@ -1,24 +1,15 @@
-import json
-import urllib.request
 import pandas as pd
 import numpy as np
+import sys
 from alpha_vantage.timeseries import TimeSeries
 from alpha_vantage.techindicators import TechIndicators
 
-
-# for installing alpha vantage package
-def install(package):
-    import subprocess
-    import sys
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-
-def get_daily_ts(stock, type, API_key):
+def get_daily_ts(stock, API_key):
     # Return daily type of historical data
     ts = TimeSeries(key=API_key, output_format='pandas')
     data, meta_data = ts.get_daily(stock)
     data.columns = ['open', 'high', 'low', 'close', 'volume']
-    return data[type]
+    return data, meta_data
 
 
 def get_daily_technical(stock, indicator, API_key, period=20):
@@ -32,14 +23,16 @@ def get_daily_technical(stock, indicator, API_key, period=20):
     elif indicator == "macd":
         # Return daily macd
         data, meta_data = ti.get_macd(symbol=stock, interval='daily')
+    else:
+        sys.exit('Failed to input a valid indicator')
 
     return data, meta_data
 
 
 def main():
-    # install('alpha_vantage')
     API_key = 'ATFBYYKDGZGWGJXS'
     googl_data, googl_meta = get_daily_ts('Googl', API_key)
+    print(googl_data)
     print(googl_meta)
 
 
