@@ -1,5 +1,6 @@
 # MLStocks
 
+### Alpha Vantage Related Functions
 **get_daily_ts(stock, API_key):**<br />
 Returns daily opening, closing, highest, 
 and lowest price, as well as daily volume.<br /><br />
@@ -13,3 +14,12 @@ Supported indicators include:
 - 'rsi'; Relative Strength Index; Default period = 14
 - 'cci'; Commodity Channel Index; Default period = 20
 - 'aroon'; Aroon; Default period = 14
+
+### Other Functions
+**merge(left, right)**<br />
+Combine two dataframes<br />
+
+**compile(stock)** Incomplete<br />
+Combine all data we want on the stock
+and save it as stockname.csv
+
