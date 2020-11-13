@@ -20,6 +20,9 @@ Supported indicators include:
 Combine two dataframes<br />
 
 **compile(stock)** Incomplete<br />
-Combine all data we want on the stock
+Combine all data we want on the stock 
 and save it as stockname.csv
 
+**create_df(stock_names, stocks_data)**<br />
+Adds stock name as a prefix to all columns in each stock dataframe 
+and combines dataframes together on date. 
