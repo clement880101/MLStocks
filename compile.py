@@ -20,7 +20,7 @@ def get_daily_technical(stock, indicator, API_key, period=-1):
             period = 20
         data, meta_data = ti.get_bbands(symbol=stock, interval='daily', time_period=period)
     elif indicator == "macd":
-        data, meta_data = ti.get_macd(symbol=stock, interval='daily')
+        data, meta_data = ti.get_macd(symbol=stock, interval='daily', time_period=period)
     elif indicator == "rsi":
         if (period <= 0):
             period = 14
