@@ -18,7 +18,6 @@ def get_daily_ts(stock, type, API_key):
     ts = TimeSeries(key=API_key, output_format='pandas')
     data, meta_data = ts.get_daily(stock)
     data.columns = ['open', 'high', 'low', 'close', 'volume']
-
     return data[type]
 
 
