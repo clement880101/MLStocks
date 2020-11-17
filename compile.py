@@ -113,6 +113,7 @@ def combine_df(stocks_names, stocks_data):
     data, meta = get_daily_ts('SPY', API_key)
     data = data.add_prefix('SPY_')
     df = merge(df, data)
+
     df.to_csv("Combined_Stock_Data.csv")
     return df
 
