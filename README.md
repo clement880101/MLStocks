@@ -15,8 +15,10 @@ Supported indicators include:
 - 'macd'; Moving Average Convergence Divergence; Period not used
 - 'rsi'; Relative Strength Index; Default period = 14
 - 'cci'; Commodity Channel Index; Default period = 20
-- 'aroon'; Aroon; Default period = 14; Period not used
-- 'ad'; Chaikin A/D line; 
+- 'aroon'; Aroon; Default period = 14
+- 'ad'; Chaikin A/D line; Period not used
+- 'adx'; Average Directional Movement Index; Default period = 20
+- 'sma'; Simple Moving Average; Default period = 40
 
 ### Other Functions
 **merge(left, right)**<br />
