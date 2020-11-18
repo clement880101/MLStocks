@@ -122,10 +122,11 @@ def main():
     parser.add_argument("dataset",
                         help="filename for dataset")
     parser.add_argument("target_column",
+                        type=int,
                         help="choose column number for target data")
     args = parser.parse_args()
-    csv = args[0]
-    target_column = args[1]  # target column rnn should optimize on
+    csv = args.dataset
+    target_column = args.target_column  # target column rnn should optimize on
 
     """
         Manage data
