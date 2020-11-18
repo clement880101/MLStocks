@@ -1,3 +1,4 @@
+import argparse
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
@@ -5,6 +6,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 from keras_adabound import AdaBound
 from matplotlib import pyplot as plt
+from sklearn.metrics import mean_squared_error as calc_mse
 
 
 # helper functions
@@ -23,8 +25,8 @@ def reverse_order(df):
 def remove_dates(df):
     # stores dates in a dictionary
     dates = {}
-    for i in range(test_df.shape[0]):
-        date = test_df.iloc[i]['date']
+    for i in range(df.shape[0]):
+        date = df.iloc[i]['date']
         dates[date] = i
 
     df = df.drop(['date'], axis=1)
@@ -66,19 +68,13 @@ def create_xy(data, scope):
 
 class Rnn:
     # set values for Rnn object
-    def __init__(self, optimizer, rows_size, columns_size, low_bound=None, high_bound=None):
-        self.low_bound = 0
-        self.high_bound = 0
-        self.optimizer = optimizer
-        self.rows_size = rows_size
-        self.columns_size = columns_size
-        if optimizer == 'adabound':
-            self.low_bound = low_bound
-            self.high_bound = high_bound
+    def __init__(self, rows_size, columns_size):
+        self.rows = rows_size
+        self.columns = columns_size
         self.model = None
 
     # train function for Rnn class
-    def create(self, layers, units_for_layers, dropouts_for_layers):
+    def structure(self, layers, units_for_layers, dropouts_for_layers):
         # initilize Sequential rnn
         self.model = Sequential()
         # add first layer and define input shape
@@ -87,9 +83,12 @@ class Rnn:
         self.model.add(Dropout(dropouts_for_layers[0]))
         # for adding additional layers
         if layers > 2:
-            for i in range(1, layers - 1):
+            for i in range(1, layers):
+
                 return_setting = True
-                if i == layers - 2: return_setting = False
+                # dont need to return values upstream on last layer
+                if i == layers - 1: return_setting = False
+
                 self.model.add(LSTM(units_for_layers[i], activation='relu', return_sequences=return_setting))
                 self.model.add(Dropout(dropouts_for_layers[i]))
 
@@ -127,6 +126,7 @@ def main():
     csv = parser[0]
     target_stock = parser[1]  # for now first stock should be the target
 
+    ########################################################## DATA
     # arrange df and split by date
     df = reverse_order(csv)
     training_data, test_data = split_data(df, '2020-01-01')
@@ -144,15 +144,31 @@ def main():
     xTrain, yTrain = create_xy(training_data, 60)
     xTest, yTest = create_xy(test_data, 60)
 
-    # create training and test sets
+    ########################################################## RNN creation
+    # batch dimensions
+    rows = xTrain.shape[1]
+    columns = xTrain.shape[2]
 
-    row_size, column_size = xTrain.shape[1], xTrain.shape[2]
-    network = Rnn('adaboost', row_size, column_size, 1e-3, 0.01)
+    # Steps for rnn:
+    # 1. initialize, #2. structure, #train, #summary, #predict
+    nnet = Rnn(rows, columns)
 
-    units = [40, 60, 80]
-    dropouts = [0.2, 0.4, 0.5]
-    network.structure(layers=4, units_for_layers=units, dropout_values=dropouts)
-    print(network.summary())
+    units = [50, 60, 80, 120]  # nodes for each layer
+    dropouts = [0.2, 0.3, 0.4, 0.5]  # strength of dropouts
+    nnet.structure(4, units, dropouts)
+    nnet.summary()
+
+    # train model
+    nnet.train(xTrain, yTrain, 10, 35, 'adaboost', 1e-3, 0.1)
+
+    ############################################################ Testing
+    # predict xTest and upscale y values
+    y_pred = nnet.predict(xTest)
+    y_pred = y_pred * upscale_value
+
+    yTest = yTest * upscale_value
+    print('Our mse error on the testing data is: ')
+    print(calc_mse(yTest, y_pred))
 
 
 if __name__ == "__main__":
