@@ -8,14 +8,10 @@ from matplotlib import pyplot as plt
 
 
 # helper functions
-def scale_data(df):
-    # scale data
-    scaler = MinMaxScaler()
-    scaled_data = scaler.fit_transform(df)
-
-    # save this value to convert stock prediction to nominal data
-    upscale_value = scaler.scale_[0]
-    return scaled_data, upscale_value
+def to_dataframe(csv):
+    # returns dataframe
+    df = pd.read_csv(csv, date_parser=True)
+    return df
 
 
 def reverse_order(df):
@@ -24,13 +20,7 @@ def reverse_order(df):
     return reversed_df
 
 
-def to_dataframe(csv):
-    # returns dataframe
-    df = pd.read_csv(csv, date_parser=True)
-    return df
-
-
-def separate_dates(df):
+def remove_dates(df):
     # stores dates in a dictionary
     dates = {}
     for i in range(test_df.shape[0]):
@@ -42,20 +32,34 @@ def separate_dates(df):
     return dates, df
 
 
-def get_valid_date(dates, value, up_or_down):
-    if value in dates:
-        print('date was valid')
-        return dates.get(value)
+def scale_data(df):
+    # scale data
+    scaler = MinMaxScaler()
+    scaled_data = scaler.fit_transform(df)
 
-    if value not in dates:
-        while retrieve == false:
-            value = value + timedelta(days=10)
-            print('The nearest valid date was')
-            return
+    # save this value to convert stock prediction to nominal data
+    upscale_value = 1 / scaler.scale_[0]
+    return scaled_data, scaler, upscale_value
 
 
-def split_data():
-    return None
+def split_data(df, date_value):
+    df_before = df[df['date'] < date_value].copy()
+    df_after = df[df['date'] >= date_value].copy()
+    return df_before, df_after
+
+
+def create_xy(data, scope):
+    x = []
+    y = []
+    for i in range(scope, data.shape[0]):
+        # the xTest will have an array of the last x "scope" days of data
+        # yTest will be the the opening value of the next day
+        x.append(data[i - scope:i])
+        y.append(data[i, 0])
+
+    # the length of x is the data length - scope
+    # in each x there is a batch size of x "scope" points
+    return np.array(x), np.array(y)
 
 
 # recurrent neural network
@@ -121,28 +125,34 @@ def main():
     parser.add_argument("target_stock_indicator",
                         help="stock indicator that will be used to find label column: 'stock_open'")
     csv = parser[0]
-    target_stock = parser[1]
+    target_stock = parser[1]  # for now first stock should be the target
 
-    # arrange data and standardize
+    # arrange df and split by date
     df = reverse_order(csv)
-    df, dates = separate_dates(df)
-    data, scale_value = scale_data(df)
-    upscale_value = 1 / scale_value
+    training_data, test_data = split_data(df, '2020-01-01')
+
+    # store date labels and drop columns
+    dates_train, training_data = remove_dates(training_data)
+    dates_test, test_data = remove_dates(test_data)
+
+    # scale_data on training data and get scaler with value
+    training_data, scaler, upscale_value = scale_data(training_data)
+    test_data = scaler.transform(test_data)
+
+    # create xTrain,yTrain.. and xTest,yTest
+    # each x in xTrain will be an array of x days
+    xTrain, yTrain = create_xy(training_data, 60)
+    xTest, yTest = create_xy(test_data, 60)
 
     # create training and test sets
-
-
-
 
     row_size, column_size = xTrain.shape[1], xTrain.shape[2]
     network = Rnn('adaboost', row_size, column_size, 1e-3, 0.01)
 
-    units = [40,60,80]
-    dropouts = [0.2,0.4,0.5]
+    units = [40, 60, 80]
+    dropouts = [0.2, 0.4, 0.5]
     network.structure(layers=4, units_for_layers=units, dropout_values=dropouts)
     print(network.summary())
-
-
 
 
 if __name__ == "__main__":
