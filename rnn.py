@@ -2,10 +2,11 @@ import argparse
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, LSTM, Dropout
-from keras_adabound import AdaBound  # pip install keras-adabound
 from matplotlib import pyplot as plt
+from keras_adabound import AdaBound  # pip install keras-adabound
+from tensorflow.keras import Sequential
+from tensorflow.keras.callbacks import CSVLogger
+from tensorflow.keras.layers import Dense, LSTM, Dropout
 from sklearn.metrics import mean_squared_error as calc_mse
 
 
@@ -72,10 +73,11 @@ class Rnn:
         self.rows = rows_size
         self.columns = columns_size
         self.model = None
+        self.logs = None
 
     # train function for Rnn class
     def structure(self, layers, units_for_layers, dropouts_for_layers):
-        # initialize Sequential rnn
+        # initilize Sequential rnn
         self.model = Sequential()
         # add first layer and define input shape
         self.model.add(
@@ -87,7 +89,8 @@ class Rnn:
 
                 return_setting = True
                 # dont need to return values upstream on last layer
-                if i == layers - 1: return_setting = False
+                if i == layers - 1:
+                    return_setting = False
 
                 self.model.add(LSTM(units_for_layers[i], activation='relu', return_sequences=return_setting))
                 self.model.add(Dropout(dropouts_for_layers[i]))
@@ -99,14 +102,22 @@ class Rnn:
     def summary(self):
         return self.model.summary()
 
+    def history(self):
+        return self.model.history
+
     def train(self, xTrain, yTrain, epochs, batch_size, optimizer, ada_low_lr=None, ada_high_lr=None):
         # compiles model that was created
         if optimizer != 'adaboost':
             self.model.compile(optimizer=optimizer, loss='mean_squared_error')
         else:
             self.model.compile(optimizer=AdaBound(lr=ada_low_lr, final_lr=ada_high_lr), loss='mean_squared_error')
+
+        # create log for getting stats
+        CSV_logger = CSVLogger('training.csv', separator=',', append=False)
         # fit model to data
-        self.model.fit(xTrain, yTrain, epochs=epochs, batch_size=batch_size)
+        self.model.fit(xTrain, yTrain, epochs=epochs, batch_size=batch_size, callbacks=[CSV_logger])
+        self.logs = CSV_logger
+        return None
 
     def predict(self, input_data):
         y_hat = self.model.predict(input_data)
@@ -124,9 +135,13 @@ def main():
     parser.add_argument("target_column",
                         type=int,
                         help="choose column number for target data")
+    parser.add_argument("split_date",
+                        type=str,
+                        help="format: 'YYYY-MM-DD' - what date to use when splitting the training and test data ")
     args = parser.parse_args()
     csv = args.dataset
     target_column = args.target_column  # target column rnn should optimize on
+    date = args.split_date
 
     """
         Manage data
@@ -134,19 +149,19 @@ def main():
     # arrange df and split by date
     df = to_dataframe(csv)
     df = reverse_order(df)
-    training_data, test_data = split_data(df, '2020-01-01')
+    training_data, test_data = split_data(df, date)
 
     # store date labels and drop columns
     dates_train, training_data = remove_dates(training_data)
     dates_test, test_data = remove_dates(test_data)
 
     # scale_data on training data and get scaler with value
-    training_data, scaler, upscale_value = scale_data(training_data, target_column-1)
+    training_data, scaler, upscale_value = scale_data(training_data, target_column - 1)
     test_data = scaler.transform(test_data)
 
     # each x in xTrain/xTest will be a matrix of x days of stock data
-    xTrain, yTrain = create_xy(data=training_data, scope=60, target_column=target_column - 1)
-    xTest, yTest = create_xy(data=test_data, scope=60, target_column=target_column - 1)
+    xTrain, yTrain = create_xy(data=training_data, scope=90, target_column=target_column - 1)
+    xTest, yTest = create_xy(data=test_data, scope=90, target_column=target_column - 1)
 
     """
             RNN creation and training
@@ -161,24 +176,29 @@ def main():
 
     units = [50, 60, 80, 120]  # nodes for each layer
     dropouts = [0.2, 0.3, 0.4, 0.5]  # strength of dropouts
-    nnet.structure(layers=4, units_for_layers=units, dropouts_for_layers=dropouts)
+    nnet.structure(4, units, dropouts)
     nnet.summary()
 
+    print('')
+
     # train model
-    nnet.train(xTrain, yTrain, epochs=10, batch_size=35, optimizer='adaboost', ada_low_lr=1e-3, ada_high_lr=0.1)
-    # optional adam model
-    # nnet.train(xTrain, yTrain, epochs=10, batch_size=35, optimizer='adam')
+    nnet.train(xTrain, yTrain, 100, 100, 'adaboost', 1e-3, 0.1)
 
     """
             Testing our RNN model and results
     """
     # predict xTest and upscale y values
     y_pred = nnet.predict(xTest)
-    y_pred = y_pred * upscale_value
+    y_pred_scaled = y_pred * upscale_value
 
-    yTest = yTest * upscale_value
+    yTest_scaled = yTest * upscale_value
     print('Our mse error on the testing data is: ')
-    print(calc_mse(yTest, y_pred))
+    error = calc_mse(y_pred, yTest)
+    print(round(error, 2))
+
+    print('Our mse error on the y after rescale is: ')
+    error = calc_mse(y_pred_scaled, yTest_scaled)
+    print(round(error, 2))
 
     """
                 Visualizing our results
