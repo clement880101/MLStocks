@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
-from keras_adabound import AdaBound
+from keras_adabound import AdaBound # pip install keras-adabound
 from matplotlib import pyplot as plt
 from sklearn.metrics import mean_squared_error as calc_mse
 
