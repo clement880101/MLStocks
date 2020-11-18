@@ -180,6 +180,18 @@ def main():
     print('Our mse error on the testing data is: ')
     print(calc_mse(yTest, y_pred))
 
+    """
+                Visualizing our results
+    """
+    plt.figure(figsize=(14, 5))
+    plt.plot(yTest, color='red', label='Actual Apple Adj. Stock Price')
+    plt.plot(y_pred, color='blue', label='Predicted Apple Adj. Stock Price')
+    plt.title('Apple Stock Price Prediction')
+    plt.xlabel('Days')
+    plt.ylabel('Apple Adj. Stock Price')
+    plt.legend()
+    plt.show()
+
 
 if __name__ == "__main__":
     main()
