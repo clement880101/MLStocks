@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
-from keras_adabound import AdaBound # pip install keras-adabound
+from keras_adabound import AdaBound  # pip install keras-adabound
 from matplotlib import pyplot as plt
 from sklearn.metrics import mean_squared_error as calc_mse
 
@@ -50,14 +50,14 @@ def split_data(df, date_value):
     return df_before, df_after
 
 
-def create_xy(data, scope):
+def create_xy(data, scope, target_column):
     x = []
     y = []
     for i in range(scope, data.shape[0]):
         # the xTest will have an array of the last x "scope" days of data
         # yTest will be the the opening value of the next day
         x.append(data[i - scope:i])
-        y.append(data[i, 0])
+        y.append(data[i, target_column])
 
     # the length of x is the data length - scope
     # in each x there is a batch size of x "scope" points
@@ -121,12 +121,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("dataset",
                         help="filename for dataset")
-    parser.add_argument("target_stock_indicator",
-                        help="stock indicator that will be used to find label column: 'stock_open'")
-    csv = parser[0]
-    target_stock = parser[1]  # for now first stock should be the target
+    parser.add_argument("target_column",
+                        help="choose column number for target data")
+    args = parser.parse_args()
+    csv = args[0]
+    target_column = args[1]  # target column rnn should optimize on
 
-    ########################################################## DATA
+    """
+        Manage data
+    """
     # arrange df and split by date
     df = reverse_order(csv)
     training_data, test_data = split_data(df, '2020-01-01')
@@ -139,12 +142,13 @@ def main():
     training_data, scaler, upscale_value = scale_data(training_data)
     test_data = scaler.transform(test_data)
 
-    # create xTrain,yTrain.. and xTest,yTest
-    # each x in xTrain will be an array of x days
-    xTrain, yTrain = create_xy(training_data, 60)
-    xTest, yTest = create_xy(test_data, 60)
+    # each x in xTrain/xTest will be a matrix of x days of stock data
+    xTrain, yTrain = create_xy(data=training_data, scope=60, target_column=target_column - 1)
+    xTest, yTest = create_xy(data=test_data, scope=60, target_column=target_column - 1)
 
-    ########################################################## RNN creation
+    """
+            RNN creation and training
+    """
     # batch dimensions
     rows = xTrain.shape[1]
     columns = xTrain.shape[2]
@@ -155,13 +159,17 @@ def main():
 
     units = [50, 60, 80, 120]  # nodes for each layer
     dropouts = [0.2, 0.3, 0.4, 0.5]  # strength of dropouts
-    nnet.structure(4, units, dropouts)
+    nnet.structure(layers=4, units_for_layers=units, dropouts_for_layers=dropouts)
     nnet.summary()
 
     # train model
-    nnet.train(xTrain, yTrain, 10, 35, 'adaboost', 1e-3, 0.1)
+    nnet.train(xTrain, yTrain, epochs=10, batch_size=35, optimizer='adaboost', ada_low_lr=1e-3, ada_high_lr=0.1)
+    # optional adam model
+    # nnet.train(xTrain, yTrain, epochs=10, batch_size=35, optimizer='adam')
 
-    ############################################################ Testing
+    """
+            Testing our RNN model and results
+    """
     # predict xTest and upscale y values
     y_pred = nnet.predict(xTest)
     y_pred = y_pred * upscale_value
