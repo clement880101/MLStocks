@@ -131,7 +131,8 @@ def main():
         Manage data
     """
     # arrange df and split by date
-    df = reverse_order(csv)
+    df = to_dataframe(csv)
+    df = reverse_order(df)
     training_data, test_data = split_data(df, '2020-01-01')
 
     # store date labels and drop columns
