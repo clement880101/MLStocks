@@ -34,13 +34,13 @@ def remove_dates(df):
     return dates, df
 
 
-def scale_data(df):
+def scale_data(df, target_column):
     # scale data
     scaler = MinMaxScaler()
     scaled_data = scaler.fit_transform(df)
 
     # save this value to convert stock prediction to nominal data
-    upscale_value = 1 / scaler.scale_[0]
+    upscale_value = 1 / scaler.scale_[target_column]
     return scaled_data, scaler, upscale_value
 
 
@@ -141,7 +141,7 @@ def main():
     dates_test, test_data = remove_dates(test_data)
 
     # scale_data on training data and get scaler with value
-    training_data, scaler, upscale_value = scale_data(training_data)
+    training_data, scaler, upscale_value = scale_data(training_data, target_column-1)
     test_data = scaler.transform(test_data)
 
     # each x in xTrain/xTest will be a matrix of x days of stock data
