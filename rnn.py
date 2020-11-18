@@ -75,7 +75,7 @@ class Rnn:
 
     # train function for Rnn class
     def structure(self, layers, units_for_layers, dropouts_for_layers):
-        # initilize Sequential rnn
+        # initialize Sequential rnn
         self.model = Sequential()
         # add first layer and define input shape
         self.model.add(
