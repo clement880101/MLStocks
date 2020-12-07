@@ -114,12 +114,12 @@ def combine_df(stocks_names, stocks_data):
     data = data.add_prefix('SPY_')
     df = merge(df, data)
 
-    df.to_csv("Combined_Stock_Data.csv")
+    df.to_csv("MSFT_Combined_Stock_Data.csv")
     return df
 
 
 def main():
-    stocks_names = ['Aapl', 'Googl']
+    stocks_names = ['Msft', 'Aapl', 'Googl', 'Fb', 'Amzn']
     stocks_data = []
     for stock in stocks_names:
         stocks_data.append(compile(stock))
