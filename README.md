@@ -43,7 +43,7 @@ CSV that contains all of the data from all of the stocks we are looking at
 #### LSTM_rnn.py
 Predict stock using LSTM RNN.
 
-## gru.py
+#### gru.py
 Predict stock using GRU RNN.
 
 
