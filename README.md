@@ -1,8 +1,9 @@
 # MLStocks
 
-##compile.py 
+## Data Collection
+#### Compile.py
 For compiling daily data
-### Alpha Vantage Related Functions
+
 **get_daily_ts(stock, API_key):**<br />
 Returns daily opening, closing, highest, 
 and lowest price, as well as daily volume.<br /><br />
@@ -20,17 +21,43 @@ Supported indicators include:
 - 'adx'; Average Directional Movement Index; Default period = 20
 - 'sma'; Simple Moving Average; Default period = 40
 
-### Other Functions
 **merge(left, right)**<br />
 Combine two dataframes<br />
 
-**compile(stock)** Incomplete<br />
-Combine all data we want on a stock 
-and return a dataframe. A csv file will also
-be created.
+**compile(stock)**<br />
+Create a CSV file for all stock in the list
 
 **combine_df(stock_names, stocks_data)**<br />
 Merge dataframe of different stocks together to
-Combined_Stock_Data.csv
+Com.csv
 
-##rnn (Recurrent Neural Network)
+## Data We Used
+
+#### Aapl.csv, Amzn.csv, Fb.csv, Googl.csv, Msft.csv
+Contains all technical indicators and prices we are intersted in compiled using compile.py from Alpha Vantage.
+
+#### Com.csv
+CSV that contains all of the data from all of the stocks we are looking at
+
+## Machine Learning
+#### LSTM_rnn.py
+Predict stock using LSTM RNN.
+
+## gru.py
+Predict stock using GRU RNN.
+
+
+## Our Results
+
+#### rnn_GRU_MSFT data folder
+Folder contains our result for predicting MSFT stock prices under different hyperparameters using GRU and MSFT data only.
+
+#### rnn_GRU_MSFT_Combined data folder
+Folder contains our result for predicting MSFT stock prices under different hyperparameters using GRU and combined data (with 4 other tech stocks).
+
+#### rnn_LSTM MSFT_combined data folder
+Folder contains our result for predicting MSFT stock prices under different hyperparameters using LSTM and combined data (with 4 other tech stocks).
+
+#### rnn_LSTM_MSFT data folder
+Folder contains our result for predicting MSFT stock prices under different hyperparameters using LSTM and MSFT data only.
+
