@@ -21,7 +21,7 @@ def get_daily_technical(stock, indicator, API_key, period=-1):
             period = 20
         data, meta_data = ti.get_bbands(symbol=stock, interval='daily', time_period=period)
     elif indicator == "macd":
-        data, meta_data = ti.get_macd(symbol=stock, interval='daily', time_period=period)
+        data, meta_data = ti.get_macd(symbol=stock, interval='daily')
     elif indicator == "rsi":
         if (period <= 0):
             period = 14
@@ -114,7 +114,7 @@ def combine_df(stocks_names, stocks_data):
     data = data.add_prefix('SPY_')
     df = merge(df, data)
 
-    df.to_csv("MSFT_Combined_Stock_Data.csv")
+    df.to_csv("Com.csv")
     return df
 
 
