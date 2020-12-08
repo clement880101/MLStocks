@@ -184,8 +184,8 @@ def main():
                 Visualizing our results
     """
     plt.figure(figsize=(14, 5))
-    plt.plot(yTest, color='red', label='Actual MSFT Adj. Stock Price')
-    plt.plot(y_pred, color='blue', label='Predicted MSFT Adj. Stock Price')
+    plt.plot(yTest_scaled, color='red', label='Actual MSFT Adj. Stock Price')
+    plt.plot(y_pred_scaled, color='blue', label='Predicted MSFT Adj. Stock Price')
     plt.title('Microsoft Stock Price Prediction')
     plt.xlabel('Days')
     plt.ylabel('Microsoft Adj. Stock Price')
