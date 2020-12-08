@@ -89,18 +89,16 @@ Create a CSV file for all stock in the list
 Merge dataframe of different stocks together to
 Com.csv
 
-## Google Colab Python Notebooks
+## Google Colab Python Notebooks Evaluation notebooks
 
 We used Google colab to run through our combination of desired parameters.
-Evaluation NBs are a similar setup and take the data which we have uploaded to Github.
+Evaluation NBs are a similar setup and take the data we created with compile.py which we have uploaded to Github.
+We download our stats and data for parameters and have stored it all in our data folders.
 
-#### Evaluation NB rnn_GRU_MSFT
-#### Evaluation NB rnn_GRU_MSFT_Combined
-#### Evaluation NB rnn_LSTM MSFT_combined 
-#### Evaluation NB rnn_LSTM_MSFT
-
-We used Google colab to run through our combination of desired parameters.
-Evaluation NBs are similar setup and take the data which we have uploaded to Github.
+#### MSFT_Only_GRU_Evaluation.ipynb
+#### MSFT_Only_GRU_Evaluation.ipynb
+#### MSFT_Combined_LSTM_RNN_Evaluation.ipynb 
+#### MSFT_Combined_LSTM_RNN_Evaluation.ipynb
 
 ## Our Results
 
