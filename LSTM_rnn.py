@@ -159,13 +159,13 @@ def main():
     # 1. initialize, #2. structure, #train, #summary, #predict
     nnet = Rnn(rows, columns)
 
-    units = [50, 60, 80, 120]  # nodes for each layer
-    dropouts = [0.2, 0.3, 0.4, 0.5]  # strength of dropouts
-    nnet.structure(layers=4, units_for_layers=units, dropouts_for_layers=dropouts)
+    units = [columns, columns, columns, columns, columns]  # nodes for each layer
+    dropouts = [0.2, 0.5, 0.5, 0.5, 0.5]  # strength of dropouts
+    nnet.structure(layers=5, units_for_layers=units, dropouts_for_layers=dropouts)
     nnet.summary()
 
     # train model
-    nnet.train(xTrain, yTrain, epochs=10, batch_size=35, optimizer='adaboost', ada_low_lr=1e-3, ada_high_lr=0.1)
+    nnet.train(xTrain, yTrain, epochs=10, batch_size=100, optimizer='adam')
     # optional adam model
     # nnet.train(xTrain, yTrain, epochs=10, batch_size=35, optimizer='adam')
 
@@ -184,11 +184,11 @@ def main():
                 Visualizing our results
     """
     plt.figure(figsize=(14, 5))
-    plt.plot(yTest, color='red', label='Actual Apple Adj. Stock Price')
-    plt.plot(y_pred, color='blue', label='Predicted Apple Adj. Stock Price')
-    plt.title('Apple Stock Price Prediction')
+    plt.plot(yTest, color='red', label='Actual MSFT Adj. Stock Price')
+    plt.plot(y_pred, color='blue', label='Predicted MSFT Adj. Stock Price')
+    plt.title('Microsoft Stock Price Prediction')
     plt.xlabel('Days')
-    plt.ylabel('Apple Adj. Stock Price')
+    plt.ylabel('Microsoft Adj. Stock Price')
     plt.legend()
     plt.show()
 
