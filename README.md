@@ -46,8 +46,7 @@ Predict stock using LSTM RNN.
 #### gru.py
 Predict stock using GRU RNN.
 
-## RNN scripts
-#### (LSTM/GRU_rnn.py) Functions:
+#### Functions:
 **to_dataframe(csv)
   #returns dataframe 
   
@@ -89,6 +88,19 @@ Create a CSV file for all stock in the list
 **combine_df(stock_names, stocks_data)**<br />
 Merge dataframe of different stocks together to
 Com.csv
+
+## Google Colab Python Notebooks
+
+We used Google colab to run through our combination of desired parameters.
+Evaluation NBs are a similar setup and take the data which we have uploaded to Github.
+
+#### Evaluation NB rnn_GRU_MSFT
+#### Evaluation NB rnn_GRU_MSFT_Combined
+#### Evaluation NB rnn_LSTM MSFT_combined 
+#### Evaluation NB rnn_LSTM_MSFT
+
+We used Google colab to run through our combination of desired parameters.
+Evaluation NBs are similar setup and take the data which we have uploaded to Github.
 
 ## Our Results
 
