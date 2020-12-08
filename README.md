@@ -36,7 +36,7 @@ Com.csv
 #### Aapl.csv, Amzn.csv, Fb.csv, Googl.csv, Msft.csv
 Contains all technical indicators and prices we are intersted in compiled using compile.py from Alpha Vantage.
 
-#### Com.csv
+#### Com.csv or Combined_Stock_Data_MSFT.csv
 CSV that contains all of the data from all of the stocks we are looking at
 
 ## Machine Learning
