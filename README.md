@@ -46,8 +46,7 @@ Predict stock using LSTM RNN.
 #### gru.py
 Predict stock using GRU RNN.
 
-## RNN scripts
-#### (LSTM/GRU_rnn.py) Functions:
+#### Functions:
 **to_dataframe(csv)
   #returns dataframe 
   
