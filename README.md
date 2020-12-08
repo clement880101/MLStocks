@@ -104,15 +104,15 @@ Evaluation NBs are similar setup and take the data which we have uploaded to Git
 
 ## Our Results
 
-#### rnn_GRU_MSFT data folder
+#### MSFT Only GRU Data folder
 Folder contains our result for predicting MSFT stock prices under different hyperparameters using GRU and MSFT data only.
 
-#### rnn_GRU_MSFT_Combined data folder
+#### MSFT Combined GRU Data folder
 Folder contains our result for predicting MSFT stock prices under different hyperparameters using GRU and combined data (with 4 other tech stocks).
 
-#### rnn_LSTM MSFT_combined data folder
+#### MSFT Combined LSTM_RNN Data folder
 Folder contains our result for predicting MSFT stock prices under different hyperparameters using LSTM and combined data (with 4 other tech stocks).
 
-#### rnn_LSTM_MSFT data folder
+#### MSFT Only LSTM RNN Data
 Folder contains our result for predicting MSFT stock prices under different hyperparameters using LSTM and MSFT data only.
 
